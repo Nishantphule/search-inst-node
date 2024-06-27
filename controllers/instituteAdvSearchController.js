@@ -5,6 +5,9 @@ const {
   REGION_MASTER,
   DISTRICT_MASTER,
   APPROVE_MASTER,
+  PATTERN_MASTER,
+  GROUP_MASTER,
+  COURSES1,
 } = require("../main_tbl_conf");
 
 const institutesConnection = mysql.createConnection({
@@ -55,6 +58,46 @@ const instituteAdvSearchController = {
   getInstituteTypeList: async (req, res) => {
     institutesConnection.query(
       `SELECT * FROM ${APPROVE_MASTER}`,
+      (error, results, fields) => {
+        if (error) {
+          console.error("Error querying MySQL:", error);
+          res.status(500).send("Error fetching data from MySQL");
+          return;
+        }
+        res.json(results); // Return data as JSON
+      }
+    );
+  },
+  getCoursePatternList: async (req, res) => {
+    institutesConnection.query(
+      `SELECT * FROM ${PATTERN_MASTER}`,
+      (error, results, fields) => {
+        if (error) {
+          console.error("Error querying MySQL:", error);
+          res.status(500).send("Error fetching data from MySQL");
+          return;
+        }
+        res.json(results); // Return data as JSON
+      }
+    );
+  },
+  getCourseGroupList: async (req, res) => {
+    institutesConnection.query(
+      `SELECT * FROM ${GROUP_MASTER}`,
+      (error, results, fields) => {
+        if (error) {
+          console.error("Error querying MySQL:", error);
+          res.status(500).send("Error fetching data from MySQL");
+          return;
+        }
+        res.json(results); // Return data as JSON
+      }
+    );
+  },
+  getCourseList: async (req, res) => {
+    const { groupId } = req.params;
+    institutesConnection.query(
+      `SELECT course_id,course_code,course_name FROM ${COURSES1} where group_id = '${groupId}'`,
       (error, results, fields) => {
         if (error) {
           console.error("Error querying MySQL:", error);
