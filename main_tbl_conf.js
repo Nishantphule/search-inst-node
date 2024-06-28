@@ -7,5 +7,8 @@ const main_tbl_conf = {
   PATTERN_MASTER: "pattern_master",
   GROUP_MASTER: "group_master",
   COURSES1: "courses1",
+  CANDIDATE_REGISTRATION: "candidate_registration",
+  CANDIDATE_CONFIRM: "candidate_confirm",
+  INST_COURSES: "inst_courses",
 };
 module.exports = main_tbl_conf;
