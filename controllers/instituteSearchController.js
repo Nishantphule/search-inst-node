@@ -57,7 +57,7 @@ const instituteSearchController = {
   checkInstCode: async (req, res) => {
     const { instCode } = req.params;
     institutesConnection.query(
-      `SELECT inst_id FROM ${INSTITUTES} WHERE inst_id = ${instCode}`,
+      `SELECT inst_id,new_inst_id FROM ${INSTITUTES} WHERE inst_id = ${instCode}`,
       (error, results, fields) => {
         if (error) {
           console.error("Error querying MySQL:", error);

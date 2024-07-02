@@ -5,6 +5,7 @@ require("dotenv").config();
 const cors = require("cors");
 const instituteSearchRouter = require("./routes/instituteSearchRoutes");
 const instituteAdvSearchRouter = require("./routes/instituteAdvSearchRoutes");
+const instituteDetailsRouter = require("./routes/instituteDetailsRoutes");
 
 // Create Express app
 const app = express();
@@ -16,6 +17,7 @@ app.get("/", async (req, res) => {
 
 app.use("/instituteSearch", instituteSearchRouter);
 app.use("/instituteAdvSearch", instituteAdvSearchRouter);
+app.use("/instituteDetails", instituteDetailsRouter);
 
 // Start the Express server
 const PORT = process.env.PORT || 3002;
