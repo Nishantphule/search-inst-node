@@ -100,6 +100,20 @@ const instituteDetailsController = {
       }
     );
   },
+  getRegionName: async (req, res) => {
+    const { code } = req.params;
+    institutesConnection.query(
+      `SELECT * FROM ${REGION_MASTER} where reg_code=${code}`,
+      (error, results, fields) => {
+        if (error) {
+          console.error("Error querying MySQL:", error);
+          res.status(500).send("Error fetching data from MySQL");
+          return;
+        }
+        res.json(results); // Return data as JSON
+      }
+    );
+  },
 };
 
 module.exports = instituteDetailsController;

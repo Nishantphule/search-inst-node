@@ -15,6 +15,7 @@ app.get("/", async (req, res) => {
   res.send("<h1><center>Welcome to Search Insitute backend</center></h1>");
 });
 
+// institute search form apis
 app.use("/instituteSearch", instituteSearchRouter);
 app.use("/instituteAdvSearch", instituteAdvSearchRouter);
 app.use("/instituteDetails", instituteDetailsRouter);

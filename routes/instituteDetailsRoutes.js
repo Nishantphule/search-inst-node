@@ -4,6 +4,7 @@ const {
   getDDdetails,
   getInstInfo,
   getDistrictName,
+  getRegionName,
 } = require("../controllers/instituteDetailsController");
 
 const instituteDetailsRouter = require("express").Router();
@@ -17,5 +18,7 @@ instituteDetailsRouter.get("/getDDdetails/:code", getDDdetails);
 instituteDetailsRouter.get("/getInstInfo/:code", getInstInfo);
 
 instituteDetailsRouter.get("/getDistrictName/:code", getDistrictName);
+
+instituteDetailsRouter.get("/getRegionName/:code", getRegionName);
 
 module.exports = instituteDetailsRouter;
