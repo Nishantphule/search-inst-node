@@ -11,5 +11,6 @@ const main_tbl_conf = {
   CANDIDATE_CONFIRM: "candidate_confirm",
   INST_COURSES: "inst_courses",
   INST_AFFIL: "inst_affil",
+  INST_COURSES_AUTONOMOUS: "inst_courses_autonomous",
 };
 module.exports = main_tbl_conf;

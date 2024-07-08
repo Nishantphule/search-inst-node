@@ -9,6 +9,8 @@ const {
   GROUP_MASTER,
   COURSES1,
   INST_AFFIL,
+  INST_COURSES_AUTONOMOUS,
+  INST_COURSES,
 } = require("../main_tbl_conf");
 
 const institutesConnection = mysql.createConnection({
@@ -60,6 +62,7 @@ const instituteDetailsController = {
   },
   getDDdetails: async (req, res) => {
     const { code } = req.params;
+    console.log(code);
     institutesConnection.query(
       `select dd_no,ifsc_code,micr_num,dd_date,bank_name,bank_area, bank_city,year_affil,affil_fee,trans_id,flag from ${INST_AFFIL} where inst_id=${code}`,
       (error, results, fields) => {
@@ -104,6 +107,40 @@ const instituteDetailsController = {
     const { code } = req.params;
     institutesConnection.query(
       `SELECT * FROM ${REGION_MASTER} where reg_code=${code}`,
+      (error, results, fields) => {
+        if (error) {
+          console.error("Error querying MySQL:", error);
+          res.status(500).send("Error fetching data from MySQL");
+          return;
+        }
+        res.json(results); // Return data as JSON
+      }
+    );
+  },
+  getaicteCourses: async (req, res) => {
+    const { code } = req.params;
+    const { type } = req.query;
+    institutesConnection.query(
+      type === "5" || type === "6"
+        ? `SELECT c.course_name name, c.course_code code, c.course_type1,ic.allow_affil, ic.intake, c.course_id, c.duration, c.pattern_code,ic.start_year ,ic.applied_for_closure,ic.closed_by_aicte,ic.affilation_since,ic.deaffilation_since,ic.closed_since,ic.apply_for_closure_since,ic.accridation,ic.accridiation_start_since,ic.accridiation_end_since,ic.punitive_flag, ic.punitive_start_date, ic.punitive_end_date, ic.block_by_msbte FROM ${COURSES1} c, ${INST_COURSES_AUTONOMOUS} ic WHERE c.course_type1 = 'A' and ic.course_id = c.course_id and ic.inst_code=${code} AND (IF( ic.punitive_flag = 'Y', ic.intake >=0, ic.intake >0 )) order by ic.intake ASC`
+        : `SELECT c.course_name name, c.course_code code, c.course_type1,ic.allow_affil, ic.intake, c.course_id, c.duration, c.pattern_code,ic.start_year ,ic.applied_for_closure,ic.closed_by_aicte,ic.affilation_since,ic.deaffilation_since,ic.closed_since,ic.apply_for_closure_since,ic.accridation,ic.accridiation_start_since,ic.accridiation_end_since,ic.punitive_flag, ic.punitive_start_date, ic.punitive_end_date, ic.block_by_msbte FROM ${COURSES1} c, ${INST_COURSES} ic WHERE c.course_type1 = 'A' and ic.course_id = c.course_id and ic.inst_code=${code} AND (IF( ic.punitive_flag = 'Y', ic.intake >=0, ic.intake >0 )) order by ic.intake ASC`,
+      (error, results, fields) => {
+        if (error) {
+          console.error("Error querying MySQL:", error);
+          res.status(500).send("Error fetching data from MySQL");
+          return;
+        }
+        res.json(results); // Return data as JSON
+      }
+    );
+  },
+  getnonaicteCourses: async (req, res) => {
+    const { code } = req.params;
+    const { type } = req.query;
+    institutesConnection.query(
+      type === "5" || type === "6"
+        ? `SELECT c.course_name name, c.course_code code, c.course_type1,ic.allow_affil, ic.intake, c.course_id, c.duration, c.pattern_code ,ic.start_year ,ic.applied_for_closure,ic.closed_by_aicte,ic.affilation_since,ic.deaffilation_since,ic.closed_since,ic.apply_for_closure_since,ic.accridation,ic.accridiation_start_since,ic.accridiation_end_since,ic.punitive_flag, ic.punitive_start_date, ic.punitive_end_date, ic.block_by_msbte FROM ${COURSES1} c, ${INST_COURSES_AUTONOMOUS} ic WHERE c.course_type1 = 'S' and ic.course_id = c.course_id and ic.inst_code=${code} and ic.intake >0 order by ic.intake ASC`
+        : `SELECT c.course_name name, c.course_code code, c.course_type1,ic.allow_affil, ic.intake, c.course_id, c.duration, c.pattern_code ,ic.start_year ,ic.applied_for_closure,ic.closed_by_aicte,ic.affilation_since,ic.deaffilation_since,ic.closed_since,ic.apply_for_closure_since,ic.accridation,ic.accridiation_start_since,ic.accridiation_end_since,ic.punitive_flag, ic.punitive_start_date, ic.punitive_end_date, ic.block_by_msbte FROM ${COURSES1} c, ${INST_COURSES} ic WHERE c.course_type1 = 'S' and ic.course_id = c.course_id and ic.inst_code=${code} and ic.intake >0 order by ic.intake ASC`,
       (error, results, fields) => {
         if (error) {
           console.error("Error querying MySQL:", error);
