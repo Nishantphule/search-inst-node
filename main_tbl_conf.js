@@ -6,6 +6,7 @@ const main_tbl_conf = {
   APPROVE_MASTER: "approve_master",
   PATTERN_MASTER: "pattern_master",
   GROUP_MASTER: "group_master",
+  CITY_MASTER: "city_master",
   COURSES1: "courses1",
   CANDIDATE_REGISTRATION: "candidate_registration",
   CANDIDATE_CONFIRM: "candidate_confirm",

@@ -11,6 +11,7 @@ const {
   INST_AFFIL,
   INST_COURSES_AUTONOMOUS,
   INST_COURSES,
+  CITY_MASTER,
 } = require("../main_tbl_conf");
 
 const institutesConnection = mysql.createConnection({
@@ -65,6 +66,19 @@ const instituteDetailsController = {
     console.log(code);
     institutesConnection.query(
       `select dd_no,ifsc_code,micr_num,dd_date,bank_name,bank_area, bank_city,year_affil,affil_fee,trans_id,flag from ${INST_AFFIL} where inst_id=${code}`,
+      (error, results, fields) => {
+        if (error) {
+          console.error("Error querying MySQL:", error);
+          res.status(500).send("Error fetching data from MySQL");
+          return;
+        }
+        res.json(results); // Return data as JSON
+      }
+    );
+  },
+  getBankCityNames: async (req, res) => {
+    institutesConnection.query(
+      `select city_code,city_name from ${CITY_MASTER} ORDER BY city_code`,
       (error, results, fields) => {
         if (error) {
           console.error("Error querying MySQL:", error);
