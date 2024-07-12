@@ -172,6 +172,20 @@ FROM candidate_count, intake_sums, institute_details, approve_master_details;`,
       }
     );
   },
+  getInstituteByDiscipline: (req, res) => {
+    const { discipline } = req.params;
+    institutesConnection.query(
+      `SELECT i.inst_id,i.inst_name,i.type,i.status,i.reg_code,SUM(ic.intake) as intake,i.new_inst_id FROM md_msbte24.institutes i,md_msbte24.inst_courses ic,md_msbte24.inst_short_info isi,md_msbte24.courses1 c WHERE i.status ='A' and i.inst_id=ic.inst_code and i.inst_id=isi.inst_code and isi.inst_code=ic.inst_code and ic.course_id=c.course_id AND isi.inst_dist in(SELECT code FROM md_msbte24.district_master_old ) AND ic.group_id IN ('G25') GROUP BY i.inst_id,i.inst_name,i.type,i.status,i.reg_code`,
+      (error, results, fields) => {
+        if (error) {
+          console.error("Error querying MySQL:", error);
+          res.status(500).send("Error fetching data from MySQL");
+          return;
+        }
+        res.json(results); // Return data as JSON
+      }
+    );
+  },
 };
 
 module.exports = instituteSearchController;
