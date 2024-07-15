@@ -172,19 +172,115 @@ FROM candidate_count, intake_sums, institute_details, approve_master_details;`,
       }
     );
   },
-  getInstituteByDiscipline: (req, res) => {
-    const { discipline } = req.params;
-    institutesConnection.query(
-      `SELECT i.inst_id,i.inst_name,i.type,i.status,i.reg_code,SUM(ic.intake) as intake,i.new_inst_id FROM md_msbte24.institutes i,md_msbte24.inst_courses ic,md_msbte24.inst_short_info isi,md_msbte24.courses1 c WHERE i.status ='A' and i.inst_id=ic.inst_code and i.inst_id=isi.inst_code and isi.inst_code=ic.inst_code and ic.course_id=c.course_id AND isi.inst_dist in(SELECT code FROM md_msbte24.district_master_old ) AND ic.group_id IN ('G25') GROUP BY i.inst_id,i.inst_name,i.type,i.status,i.reg_code`,
-      (error, results, fields) => {
-        if (error) {
-          console.error("Error querying MySQL:", error);
-          res.status(500).send("Error fetching data from MySQL");
-          return;
-        }
-        res.json(results); // Return data as JSON
+  getInstitutes: (req, res) => {
+    const filters = req.query;
+    // const {
+    //   discipline,
+    //   region,
+    //   district,
+    //   instType,
+    //   status,
+    //   coursePat,
+    //   courseGroup,
+    //   course,
+    //   courseType,
+    // } = req.query;
+    console.log(filters);
+    let newQuery = `SELECT i.inst_id,i.inst_name,i.type,i.status,i.reg_code,SUM(ic.intake) as intake,i.new_inst_id FROM institutes i,inst_courses ic,inst_short_info isi,courses1 c WHERE `;
+
+    let conditions = [];
+    if (filters.status === "affiliated") {
+      conditions.push(
+        `status = 'A' and i.inst_id=ic.inst_code and i.inst_id=isi.inst_code and isi.inst_code=ic.inst_code and ic.course_id=c.course_id`
+      );
+    } else if (filters.status === "notaffiliated") {
+      conditions.push(
+        `status != 'A' and i.inst_id=ic.inst_code and i.inst_id=isi.inst_code and isi.inst_code=ic.inst_code and ic.course_id=c.course_id`
+      );
+    }
+
+    if (filters.region !== 0) {
+      if (filters.region === "5005") {
+        conditions.push(`inst_id IN ('998','999')`);
+      } else {
+        conditions.push(`i.reg_code = ${filters.region}`);
       }
-    );
+    }
+
+    if (filters.instType !== 0) {
+      conditions.push(`i.type = ${filters.instType}`);
+    }
+
+    if (filters.course !== 0) {
+      conditions.push(`ic.course_id = ${filters.course}`);
+    }
+
+    if (filters.courseType) {
+      conditions.push(`c.course_type1 = '${filters.courseType}'`);
+    }
+
+    if (filters.coursePat !== 0) {
+      conditions.push(`c.pattern_code = ${filters.coursePat}`);
+    }
+
+    if (filters.district !== 0) {
+      conditions.push(`isi.inst_dist = ${filters.district}`);
+    }
+
+    if (filters.courseGroup !== "0") {
+      conditions.push(`ic.group_id = "${filters.courseGroup}"`);
+    } else if (filters.discipline !== "") {
+      const disciplineGroups = {
+        PH: ["G25"],
+        AH: ["G11", "G26"],
+        HM: "G24",
+        PM: "G6",
+        EPH: [
+          "G12",
+          "G13",
+          "G14",
+          "G15",
+          "G16",
+          "G17",
+          "G18",
+          "G19",
+          "G20",
+          "G21",
+          "G22",
+          "G23",
+          "G25",
+        ],
+        ST: ["G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9", "G10"],
+        ET: [
+          "G12",
+          "G13",
+          "G14",
+          "G15",
+          "G16",
+          "G17",
+          "G18",
+          "G19",
+          "G20",
+          "G21",
+          "G22",
+          "G23",
+        ],
+      };
+      const groupIds = disciplineGroups[filters.discipline];
+      conditions.push(`ic.group_id IN ("${groupIds.join('", "')}")`);
+    }
+
+    newQuery += conditions.join(" AND ");
+    newQuery += ` GROUP BY i.inst_id,i.inst_name,i.type,i.status,i.reg_code`;
+    console.log(newQuery);
+    institutesConnection.query(`${newQuery}`, (error, results, fields) => {
+      if (error) {
+        console.error("Error querying MySQL:", error);
+        res.status(500).send("Error fetching data from MySQL");
+        return;
+      }
+      res.json(results); // Return data as JSON
+    });
   },
 };
 

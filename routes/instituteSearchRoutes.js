@@ -4,7 +4,7 @@ const {
   checkInstCode,
   checkInstId,
   getSingleInstitute,
-  getInstituteByDiscipline,
+  getInstitutes,
 } = require("../controllers/instituteSearchController");
 
 const instituteSearchRouter = require("express").Router();
@@ -19,5 +19,5 @@ instituteSearchRouter.get("/checkInstId/:instId", checkInstId);
 
 instituteSearchRouter.get("/institute/:id", getSingleInstitute);
 
-instituteSearchRouter.get("/institutes/:discipline", getInstituteByDiscipline);
+instituteSearchRouter.get("/institutes", getInstitutes);
 module.exports = instituteSearchRouter;
