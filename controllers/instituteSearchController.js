@@ -199,7 +199,7 @@ FROM candidate_count, intake_sums, institute_details, approve_master_details;`,
       );
     }
 
-    if (filters.region !== 0) {
+    if (filters.region !== "0") {
       if (filters.region === "5005") {
         conditions.push(`inst_id IN ('998','999')`);
       } else {
@@ -207,23 +207,23 @@ FROM candidate_count, intake_sums, institute_details, approve_master_details;`,
       }
     }
 
-    if (filters.instType !== 0) {
+    if (filters.instType !== "0") {
       conditions.push(`i.type = ${filters.instType}`);
     }
 
-    if (filters.course !== 0) {
+    if (filters.course !== "0") {
       conditions.push(`ic.course_id = ${filters.course}`);
     }
 
-    if (filters.courseType) {
+    if (filters.courseType !== "all") {
       conditions.push(`c.course_type1 = '${filters.courseType}'`);
     }
 
-    if (filters.coursePat !== 0) {
+    if (filters.coursePat !== "0") {
       conditions.push(`c.pattern_code = ${filters.coursePat}`);
     }
 
-    if (filters.district !== 0) {
+    if (filters.district !== "0") {
       conditions.push(`isi.inst_dist = ${filters.district}`);
     }
 
