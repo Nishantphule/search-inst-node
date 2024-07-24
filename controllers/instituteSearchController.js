@@ -6,6 +6,7 @@ const {
   CANDIDATE_CONFIRM,
   INST_COURSES,
   APPROVE_MASTER,
+  DISTRICT_MASTER,
 } = require("../main_tbl_conf");
 
 const institutesConnection = mysql.createConnection({
@@ -199,7 +200,7 @@ FROM candidate_count, intake_sums, institute_details, approve_master_details;`,
       );
     }
 
-    if (filters.region !== "0") {
+    if (filters.region !== "0" && filters.region !== "all") {
       if (filters.region === "5005") {
         conditions.push(`inst_id IN ('998','999')`);
       } else {
@@ -219,22 +220,24 @@ FROM candidate_count, intake_sums, institute_details, approve_master_details;`,
       conditions.push(`c.course_type1 = '${filters.courseType}'`);
     }
 
-    if (filters.coursePat !== "0") {
+    if (filters.coursePat !== "0" && filters.coursePat !== "All") {
       conditions.push(`c.pattern_code = ${filters.coursePat}`);
     }
 
-    if (filters.district !== "0") {
+    if (filters.district !== "0" && filters.district !== "") {
       conditions.push(`isi.inst_dist = ${filters.district}`);
     }
 
-    if (filters.courseGroup !== "0") {
+    if (filters.courseGroup !== "0" && filters.courseGroup !== "All") {
       conditions.push(`ic.group_id = "${filters.courseGroup}"`);
-    } else if (filters.discipline !== "") {
+    }
+
+    if (filters.discipline !== "" && filters.discipline !== '""') {
       const disciplineGroups = {
         PH: ["G25"],
         AH: ["G11", "G26"],
-        HM: "G24",
-        PM: "G6",
+        HM: ["G24"],
+        PM: ["G6"],
         EPH: [
           "G12",
           "G13",
@@ -268,6 +271,7 @@ FROM candidate_count, intake_sums, institute_details, approve_master_details;`,
       };
       const groupIds = disciplineGroups[filters.discipline];
       conditions.push(`ic.group_id IN ("${groupIds.join('", "')}")`);
+      console.log(groupIds, "checking group ids");
     }
 
     newQuery += conditions.join(" AND ");
@@ -280,6 +284,41 @@ FROM candidate_count, intake_sums, institute_details, approve_master_details;`,
         return;
       }
       res.json(results); // Return data as JSON
+    });
+  },
+  getInstituteType: (req, res) => {
+    const { code } = req.params;
+    institutesConnection.query(
+      `SELECT * FROM ${APPROVE_MASTER} where approv_id=${code}`,
+      (error, results, fields) => {
+        if (error) {
+          console.error("Error querying MySQL:", error);
+          res.status(500).send("Error fetching data from MySQL");
+          return;
+        }
+        res.json(results); // Return data as JSON
+      }
+    );
+  },
+  getDistrictName: (req, res) => {
+    const { code } = req.params;
+    const query = `
+    SELECT d.district AS dist_name
+    FROM ${DISTRICT_MASTER} d
+    WHERE d.code = (
+      SELECT i.inst_dist
+      FROM ${INST_SHORT_INFO} i
+      WHERE i.inst_code = ?
+    )
+  `;
+    institutesConnection.query(query, [code], (error, results) => {
+      if (error) {
+        console.error("Error querying MySQL:", error);
+        return res
+          .status(500)
+          .json({ error: "Error fetching data from MySQL" });
+      }
+      res.json(results);
     });
   },
 };
