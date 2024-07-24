@@ -28,7 +28,7 @@ institutesConnection.connect((err) => {
     return;
   }
   console.log(
-    "Connected to Institutes database for Institute Advance Search Controller"
+    "Connected to Institutes database for Institute Details Controller"
   );
 });
 
