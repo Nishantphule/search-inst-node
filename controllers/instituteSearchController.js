@@ -276,7 +276,7 @@ FROM candidate_count, intake_sums, institute_details, approve_master_details;`,
 
     newQuery += conditions.join(" AND ");
     newQuery += ` GROUP BY i.inst_id,i.inst_name,i.type,i.status,i.reg_code`;
-    console.log(newQuery);
+    console.log(newQuery, "hello I am the new query");
     institutesConnection.query(`${newQuery}`, (error, results, fields) => {
       if (error) {
         console.error("Error querying MySQL:", error);
