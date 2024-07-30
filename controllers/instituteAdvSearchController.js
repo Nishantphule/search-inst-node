@@ -55,6 +55,20 @@ const instituteAdvSearchController = {
       }
     );
   },
+  getDistrictsList: async (req, res) => {
+    const { code } = req.params;
+    institutesConnection.query(
+      `SELECT * FROM ${DISTRICT_MASTER} where region=${code}`,
+      (error, results, fields) => {
+        if (error) {
+          console.error("Error querying MySQL:", error);
+          res.status(500).send("Error fetching data from MySQL");
+          return;
+        }
+        res.json(results); // Return data as JSON
+      }
+    );
+  },
   getInstituteTypeList: async (req, res) => {
     institutesConnection.query(
       `SELECT * FROM ${APPROVE_MASTER}`,
