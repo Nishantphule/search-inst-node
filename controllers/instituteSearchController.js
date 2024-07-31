@@ -198,6 +198,10 @@ FROM candidate_count, intake_sums, institute_details, approve_master_details;`,
       conditions.push(
         `status != 'A' and i.inst_id=ic.inst_code and i.inst_id=isi.inst_code and isi.inst_code=ic.inst_code and ic.course_id=c.course_id`
       );
+    } else {
+      conditions.push(
+        `i.inst_id=ic.inst_code and i.inst_id=isi.inst_code and isi.inst_code=ic.inst_code and ic.course_id=c.course_id`
+      );
     }
 
     if (filters.region !== "0" && filters.region !== "all") {
